@@ -1,0 +1,30 @@
+varnishtest "synth.pixel()"
+
+server s1 {
+   rxreq
+   txresp
+} -start
+
+varnish v1 -vcl+backend {
+    import synth from "${vmod_topbuild}/src/.libs/libvmod_synth.so";
+
+    sub vcl_recv {
+        error 700;
+    }
+
+    sub vcl_error {
+        set obj.status = 200;
+        set obj.response = "OK";
+        set obj.http.Content-Type = "image/gif";
+        synth.pixel();
+        return (deliver);
+    }
+} -start
+
+client c1 {
+    txreq -url "/"
+    rxresp
+    expect resp.http.Content-Length == "43"
+} -run
+
+varnish v1 -expect client_req == 1

@@ -1,0 +1,7 @@
+Module synth
+Init init_function
+
+Function VOID file(PRIV_VCL, PRIV_CALL, STRING)
+Function VOID template(PRIV_VCL, PRIV_CALL, STRING, STRING)
+Function VOID pixel()
+Function VOID string(STRING)
