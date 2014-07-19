@@ -66,11 +66,13 @@ template
 Prototype
         ::
 
-                template(STRING path, STRING placeholders)
+                template(STRING path, STRING placeholders, STRING delimiter)
 Arguments
     path: location of a template file readable by Varnish Cache.
 
-    placeholders: pipe (|) delimited list of placeholders names and values.
+    placeholders: delimited list of placeholders names and values.
+
+    delimiter: character delimiting names and values in the list of placeholders.
 Return value
     VOID
 Description
@@ -84,8 +86,8 @@ Example
             sub vcl_error {
                 synth.file(
                     "/etc/varnish/templates/error.html",
-                    "{{ xid }}|" + req.xid + "|" +
-                    "{{ status }}|" + obj.status);
+                    "{{ xid }}|" + req.xid + "|{{ status }}|" + obj.status,
+                    "|");
 
                 set obj.response = "OK";
                 set obj.http.Content-Type = "text/html";

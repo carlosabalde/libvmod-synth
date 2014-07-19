@@ -2,6 +2,6 @@ Module synth
 Init init_function
 
 Function VOID file(PRIV_CALL, STRING)
-Function VOID template(PRIV_CALL, STRING, STRING)
+Function VOID template(PRIV_CALL, STRING, STRING, STRING)
 Function VOID pixel()
 Function VOID string(STRING)

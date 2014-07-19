@@ -22,7 +22,8 @@ varnish v1 -vcl+backend {
         set obj.http.Content-Type = "text/plain";
         synth.template(
             "${tmpdir}/test.txt.tmpl",
-            "{{ name }}|" + req.http.Name);
+            "{{ name }}|" + req.http.Name,
+            "|");
         return (deliver);
     }
 } -start

@@ -33,7 +33,7 @@ static synth_file *
 get_synth_file(struct vmod_priv *call_priv, const char *path);
 
 static char *
-render(char *contents, unsigned long size, const char *placeholders);
+render(char *contents, unsigned long size, const char *placeholders, const char *delimiter);
 
 int
 init_function(struct vmod_priv *vcl_priv, const struct VCL_conf *conf)
@@ -69,12 +69,14 @@ vmod_file(
 void
 vmod_template(
     struct sess *sp, struct vmod_priv *call_priv,
-    const char *path, const char *placeholders)
+    const char *path, const char *placeholders, const char *delimiter)
 {
-    if ((path != NULL) && (placeholders != NULL)) {
+    if ((path != NULL) &&
+        (placeholders != NULL) &&
+        (delimiter != NULL) && (strlen(delimiter) == 1)) {
         synth_file *file = get_synth_file(call_priv, path);
         if (file != NULL) {
-            char *buffer = render(file->contents, file->size, placeholders);
+            char *buffer = render(file->contents, file->size, placeholders, delimiter);
             synth(sp, buffer, strlen(buffer));
             free(buffer);
         }
@@ -221,7 +223,9 @@ get_synth_file(struct vmod_priv *call_priv, const char *path)
 }
 
 static char *
-render(char *contents, unsigned long size, const char *placeholders)
+render(
+    char *contents, unsigned long size,
+    const char *placeholders, const char *delimiter)
 {
     char *result;
     int allocated, used;
@@ -239,8 +243,8 @@ render(char *contents, unsigned long size, const char *placeholders)
     unsigned placeholder_name_len, placeholder_value_len;
     ptr = remaining_placeholders = strdup(placeholders);
     AN(ptr);
-    while (((placeholder_name = strsep(&remaining_placeholders, "|")) != NULL) &&
-           (((placeholder_value = strsep(&remaining_placeholders, "|")) != NULL) ||
+    while (((placeholder_name = strsep(&remaining_placeholders, delimiter)) != NULL) &&
+           (((placeholder_value = strsep(&remaining_placeholders, delimiter)) != NULL) ||
             (remaining_placeholders != NULL))) {
         // Initializations.
         if (placeholder_value == NULL) {
