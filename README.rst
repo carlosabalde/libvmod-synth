@@ -22,7 +22,7 @@ DESCRIPTION
 Simple VMOD useful to generate synthetic responses during the ``vcl_error`` phase. Four types of responses are supported:
 
 * **Files**: delivers contents of any readable file, including binary ones.
-* **Templates**: delivers contents of any reasable template file, once rendered according with a list of tuples representing names and values of placeholders.
+* **Templates**: delivers contents of any readable template file, once rendered according with a list of tuples representing names and values of placeholders.
 * **Pixels**: delivers transparent 1px GIF images.
 * **Strings**: delivers any string value (i.e. no difference at all with the ``synthetic()`` primitive).
 
@@ -41,7 +41,7 @@ Arguments
 Return value
     VOID
 Description
-    Does the same as the ``synthetic()`` primitive, but uses the contents of a file. 
+    Does the same as the ``synthetic()`` primitive, but uses the contents of a file.
     Must be used during the ``vcl_error`` phase.
     Beware that files are internally cached for further usage.
     Cached files can be updated simply reloading the VCL.
@@ -50,7 +50,7 @@ Example
 
             sub vcl_error {
                 if (obj.status == 700) {
-                    synth.file("/var/www/logo.png");
+                    synth.file("/etc/varnish/assets/logo.png");
 
                     set obj.status = 200;
                     set obj.response = "OK";
@@ -74,7 +74,7 @@ Arguments
 Return value
     VOID
 Description
-    Does the same as the ``synthetic()`` primitive, but uses the contents of a template file. 
+    Does the same as the ``synthetic()`` primitive, but uses the contents of a template file.
     Must be used during the ``vcl_error`` phase.
     Beware that template files are internally cached for further usage.
     Cached template files can be updated simply reloading the VCL.
@@ -83,7 +83,7 @@ Example
 
             sub vcl_error {
                 synth.file(
-                    "/var/www/error.html",
+                    "/etc/varnish/templates/error.html",
                     "{{ xid }}|" + req.xid + "|" +
                     "{{ status }}|" + obj.status);
 
@@ -104,7 +104,7 @@ Prototype
 Return value
     VOID
 Description
-    Does the same as the ``synthetic()`` primitive, but uses the contents of a transparent 1px GIF image. 
+    Does the same as the ``synthetic()`` primitive, but uses the contents of a transparent 1px GIF image.
     Must be used during the ``vcl_error`` phase.
 Example
         ::
@@ -135,7 +135,7 @@ Arguments
 Return value
     VOID
 Description
-    Does the same as the ``synthetic()`` primitive. 
+    Does the same as the ``synthetic()`` primitive.
     Must be used during the ``vcl_error`` phase.
 Example
         ::

@@ -40,7 +40,8 @@ init_function(struct vmod_priv *vcl_priv, const struct VCL_conf *conf)
 {
     // Initialize the local VCL data structure.
     if (vcl_priv->priv == NULL) {
-        // Every time the VMOD is loaded increase the global version.
+        // Every time the VMOD is loaded increase the global version. This
+        // will be used to refresh cached files when the VCL is reloaded.
         AZ(pthread_mutex_lock(&mutex));
         version++;
         AZ(pthread_mutex_unlock(&mutex));
@@ -54,8 +55,7 @@ init_function(struct vmod_priv *vcl_priv, const struct VCL_conf *conf)
 
 void
 vmod_file(
-    struct sess *sp,
-    struct vmod_priv *vcl_priv, struct vmod_priv *call_priv,
+    struct sess *sp, struct vmod_priv *call_priv,
     const char *path)
 {
     if (path != NULL) {
@@ -68,8 +68,7 @@ vmod_file(
 
 void
 vmod_template(
-    struct sess *sp,
-    struct vmod_priv *vcl_priv, struct vmod_priv *call_priv,
+    struct sess *sp, struct vmod_priv *call_priv,
     const char *path, const char *placeholders)
 {
     if ((path != NULL) && (placeholders != NULL)) {
