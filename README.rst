@@ -121,6 +121,10 @@ Example
                     set obj.response = "OK";
                     set obj.http.Content-Type = "image/gif";
 
+                    set obj.http.Cache-Control = "no-cache, no-store, must-revalidate";
+                    set obj.http.Pragma = "no-cache";
+                    set obj.http.Expires = "0";
+
                     return (deliver);
                 }
             }
