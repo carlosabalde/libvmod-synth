@@ -3,6 +3,7 @@ Name: vmod-synth
 Version: 0.1
 Release: 1%{?dist}
 License: BSD
+URL: https://github.com/carlosabalde/libvmod-synth
 Group: System Environment/Daemons
 Source0: libvmod-synth.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
