@@ -6,7 +6,8 @@
 
 #include "vrt.h"
 #include "vqueue.h"
-#include "bin/varnishd/cache.h"
+#include "vcl.h"
+#include "cache/cache.h"
 #include "vcc_if.h"
 
 static unsigned version = 0;
@@ -27,7 +28,7 @@ static VTAILQ_HEAD(, synth_file) files = VTAILQ_HEAD_INITIALIZER(files);
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void
-synth(struct sess *sp, char *contents, unsigned long size);
+synth(const struct vrt_ctx *ctx, char *contents, unsigned long size);
 
 static synth_file *
 get_synth_file(struct vmod_priv *call_priv, const char *path);
@@ -55,21 +56,21 @@ init_function(struct vmod_priv *vcl_priv, const struct VCL_conf *conf)
 
 void
 vmod_file(
-    struct sess *sp, struct vmod_priv *call_priv,
-    const char *path)
+    const struct vrt_ctx *ctx, struct vmod_priv *call_priv,
+    VCL_STRING path)
 {
     if (path != NULL) {
         synth_file *file = get_synth_file(call_priv, path);
         if (file != NULL) {
-            synth(sp, file->contents, file->size);
+            synth(ctx, file->contents, file->size);
         }
     }
 }
 
 void
 vmod_template(
-    struct sess *sp, struct vmod_priv *call_priv,
-    const char *path, const char *placeholders, const char *delimiter)
+    const struct vrt_ctx *ctx, struct vmod_priv *call_priv,
+    VCL_STRING path, VCL_STRING placeholders, VCL_STRING delimiter)
 {
     if ((path != NULL) &&
         (placeholders != NULL) &&
@@ -77,26 +78,26 @@ vmod_template(
         synth_file *file = get_synth_file(call_priv, path);
         if (file != NULL) {
             char *buffer = render(file->contents, file->size, placeholders, delimiter);
-            synth(sp, buffer, strlen(buffer));
+            synth(ctx, buffer, strlen(buffer));
             free(buffer);
         }
     }
 }
 
 void
-vmod_pixel(struct sess *sp)
+vmod_pixel(const struct vrt_ctx *ctx)
 {
     synth(
-        sp,
+        ctx,
         "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b",
         43);
 }
 
 void
-vmod_string(struct sess *sp, const char *value)
+vmod_string(const struct vrt_ctx *ctx, VCL_STRING value)
 {
     if (value != NULL) {
-        synth(sp, (char *)value, strlen(value));
+        synth(ctx, (char *)value, strlen(value));
     }
 }
 
@@ -105,18 +106,22 @@ vmod_string(struct sess *sp, const char *value)
  *****************************************************************************/
 
 static void
-synth(struct sess *sp, char *contents, unsigned long size)
+synth(const struct vrt_ctx *ctx, char *contents, unsigned long size)
 {
-    if (sp->step == STP_ERROR) {
-        CHECK_OBJ_NOTNULL(sp, SESS_MAGIC);
-        CHECK_OBJ_NOTNULL(sp->obj, OBJECT_MAGIC);
+    if (ctx->req->req_step == R_STP_SYNTH) {
+        CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 
-        struct vsb *vsb = SMS_Makesynth(sp->obj);
+        struct vsb *vsb;
+        if (ctx->method == VCL_MET_BACKEND_ERROR) {
+            CHECK_OBJ_NOTNULL(ctx->bo, BUSYOBJ_MAGIC);
+            vsb = ctx->bo->synth_body;
+        } else {
+            CHECK_OBJ_NOTNULL(ctx->req, REQ_MAGIC);
+            vsb = ctx->req->synth_body;
+        }
         AN(vsb);
+
         VSB_bcat(vsb, contents, size);
-        SMS_Finish(sp->obj);
-        http_Unset(sp->obj->http, H_Content_Length);
-        http_PrintfHeader(sp->wrk, sp->fd, sp->obj->http, "Content-Length: %d", sp->obj->len);
     }
 }
 

@@ -9,13 +9,13 @@ varnish v1 -vcl+backend {
     import synth from "${vmod_topbuild}/src/.libs/libvmod_synth.so";
 
     sub vcl_recv {
-        error 700;
+        return (synth(700, "OK"));
     }
 
-    sub vcl_error {
-        set obj.status = 200;
-        set obj.response = "OK";
-        set obj.http.Content-Type = "image/gif";
+    sub vcl_synth {
+        set resp.status = 200;
+        set resp.reason = "OK";
+        set resp.http.Content-Type = "image/gif";
         synth.pixel();
         return (deliver);
     }
