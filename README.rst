@@ -19,7 +19,7 @@ import synth;
 DESCRIPTION
 ===========
 
-Simple VMOD useful to generate synthetic responses during the ``vcl_error`` phase. Four types of responses are supported:
+Simple VMOD useful to generate synthetic responses during the ``vcl_synth`` phase. Four types of responses are supported:
 
 * **Files**: delivers contents of any readable file, including binary ones.
 * **Templates**: delivers contents of any readable template file, once rendered according with a list of tuples representing names and values of placeholders.
@@ -42,19 +42,19 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a file.
-    Must be used during the ``vcl_error`` phase.
+    Must be used during the ``vcl_synth`` phase.
     Beware that files are internally cached for further usage.
     Cached files can be updated simply reloading the VCL.
 Example
         ::
 
-            sub vcl_error {
-                if (obj.status == 700) {
+            sub vcl_synth {
+                if (resp.status == 700) {
                     synth.file("/etc/varnish/assets/logo.png");
 
-                    set obj.status = 200;
-                    set obj.response = "OK";
-                    set obj.http.Content-Type = "image/png";
+                    set resp.status = 200;
+                    set resp.reason = "OK";
+                    set resp.http.Content-Type = "image/png";
 
                     return (deliver);
                 }
@@ -77,21 +77,21 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a template file.
-    Must be used during the ``vcl_error`` phase.
+    Must be used during the ``vcl_synth`` phase.
     Beware that template files are internally cached for further usage.
     Cached template files can be updated simply reloading the VCL.
 Example
         ::
 
-            sub vcl_error {
+            sub vcl_synth {
                 synth.file(
                     "/etc/varnish/templates/error.html",
-                    "{{ xid }}|" + req.xid + "|{{ status }}|" + obj.status,
+                    "{{ xid }}|" + req.xid + "|{{ status }}|" + resp.status,
                     "|");
 
-                set obj.response = "OK";
-                set obj.http.Content-Type = "text/html";
-                set obj.status = 200;
+                set resp.reason = "OK";
+                set resp.http.Content-Type = "text/html";
+                set resp.status = 200;
 
                 return (deliver);
             }
@@ -107,19 +107,19 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a transparent 1px GIF image.
-    Must be used during the ``vcl_error`` phase.
+    Must be used during the ``vcl_synth`` phase.
 Example
         ::
 
-            sub vcl_error {
-                if (obj.status == 700) {
+            sub vcl_synth {
+                if (resp.status == 700) {
                     std.log("...");
 
                     synth.pixel();
 
-                    set obj.status = 200;
-                    set obj.response = "OK";
-                    set obj.http.Content-Type = "image/gif";
+                    set resp.status = 200;
+                    set resp.reason = "OK";
+                    set resp.http.Content-Type = "image/gif";
 
                     set obj.http.Cache-Control = "no-cache, no-store, must-revalidate";
                     set obj.http.Pragma = "no-cache";
@@ -142,16 +142,16 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive.
-    Must be used during the ``vcl_error`` phase.
+    Must be used during the ``vcl_synth`` phase.
 Example
         ::
 
-            sub vcl_error {
+            sub vcl_synth {
                 synth.string("Hello world!");
 
-                set obj.status = 200;
-                set obj.response = "OK";
-                set obj.http.Content-Type = "text/plain";
+                set resp.status = 200;
+                set resp.reason = "OK";
+                set resp.http.Content-Type = "text/plain";
 
                 return (deliver);
             }
