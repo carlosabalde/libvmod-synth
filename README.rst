@@ -2,6 +2,9 @@
 vmod_synth
 ==========
 
+.. image:: https://travis-ci.org/carlosabalde/libvmod-synth.svg?branch=3.0
+    :target: https://travis-ci.org/carlosabalde/libvmod-synth
+
 --------------------
 Varnish Synth Module
 --------------------
