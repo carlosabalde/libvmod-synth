@@ -2,7 +2,8 @@
 vmod_synth
 ==========
 
-[![Build Status](https://travis-ci.org/carlosabalde/libvmod-synth.svg?branch=master)](https://travis-ci.org/carlosabalde/libvmod-synth)
+.. image:: https://travis-ci.org/carlosabalde/libvmod-synth.svg?branch=master
+    :target: https://travis-ci.org/carlosabalde/libvmod-synth
 
 --------------------
 Varnish Synth Module
