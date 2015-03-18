@@ -22,7 +22,7 @@ import synth;
 DESCRIPTION
 ===========
 
-Simple VMOD useful to generate synthetic responses during the ``vcl_synth`` phase. Four types of responses are supported:
+Simple VMOD useful to generate synthetic responses during the ``vcl_synth`` or ``vcl_backend_error`` phases. Four types of responses are supported:
 
 * **Files**: delivers contents of any readable file, including binary ones.
 * **Templates**: delivers contents of any readable template file, once rendered according with a list of tuples representing names and values of placeholders.
@@ -45,7 +45,7 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a file.
-    Must be used during the ``vcl_synth`` phase.
+    Must be used during the ``vcl_synth`` or ``vcl_backend_error`` phases.
     Beware that files are internally cached for further usage.
     Cached files can be updated simply reloading the VCL.
 Example
@@ -80,7 +80,7 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a template file.
-    Must be used during the ``vcl_synth`` phase.
+    Must be used during the ``vcl_synth`` or ``vcl_backend_error`` phases.
     Beware that template files are internally cached for further usage.
     Cached template files can be updated simply reloading the VCL.
 Example
@@ -110,7 +110,7 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a transparent 1px GIF image.
-    Must be used during the ``vcl_synth`` phase.
+    Must be used during the ``vcl_synth`` or ``vcl_backend_error`` phases.
 Example
         ::
 
@@ -145,7 +145,7 @@ Return value
     VOID
 Description
     Does the same as the ``synthetic()`` primitive.
-    Must be used during the ``vcl_synth`` phase.
+    Must be used during the ``vcl_synth`` or ``vcl_backend_error`` phases.
 Example
         ::
 
