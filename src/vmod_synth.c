@@ -108,7 +108,8 @@ vmod_string(const struct vrt_ctx *ctx, VCL_STRING value)
 static void
 synth(const struct vrt_ctx *ctx, char *contents, unsigned long size)
 {
-    if (ctx->req->req_step == R_STP_SYNTH) {
+    if ((ctx->method == VCL_MET_SYNTH) ||
+        (ctx->method == VCL_MET_BACKEND_ERROR)) {
         CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 
         struct vsb *vsb;
