@@ -51,6 +51,9 @@ init_function(struct vmod_priv *vcl_priv, const struct VCL_conf *conf)
         AN(vcl_priv->priv);
         vcl_priv->free = free;
     }
+
+    // Done!
+    return 0;
 }
 
 void
@@ -240,7 +243,6 @@ render(
     // Replace placeholders.
     char *ptr, *remaining_placeholders;
     char *placeholder_name, *placeholder_value;
-    unsigned placeholder_name_len, placeholder_value_len;
     ptr = remaining_placeholders = strdup(placeholders);
     AN(ptr);
     while (((placeholder_name = strsep(&remaining_placeholders, delimiter)) != NULL) &&
