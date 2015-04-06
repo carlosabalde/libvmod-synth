@@ -7,8 +7,8 @@ URL: https://github.com/carlosabalde/libvmod-synth
 Group: System Environment/Daemons
 Source0: libvmod-synth.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires: varnish > 3.0
-BuildRequires: make, python-docutils
+Requires: varnish > 4.0.2
+BuildRequires: make, python-docutils, varnish >= 4.0.2, varnish-libs-devel >= 4.0.2
 
 %description
 Synth VMOD for Varnish
@@ -18,14 +18,15 @@ Synth VMOD for Varnish
 
 %build
 ./configure VMODDIR=%{VMODDIR} --prefix=/usr/ --docdir='${datarootdir}/doc/%{name}'
-make
-make check
+%{__make} %{?_smp_mflags}
+%{__make} %{?_smp_mflags} check
 
 %install
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && %{__rm} -rf %{buildroot}
+%{__make} install DESTDIR=%{buildroot}
 
 %clean
-rm -rf %{buildroot}
+[ %{buildroot} != "/" ] && %{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)

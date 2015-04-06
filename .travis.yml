@@ -11,10 +11,10 @@ before_install:
 before_script:
   - ./autogen.sh
   - ./configure --prefix=/usr
-  - make -j4
+  - make -j1
 
 script:
-  - make check -j4
+  - make check -j1
 
 compiler:
   - clang

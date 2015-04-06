@@ -1,4 +1,18 @@
+#
+# Copyright (c) 2014-2015 Carlos Abalde <carlos.abalde@gmail.com>
+#
+# You're free to use and distribute this under terms in the
+# LICENSE file.
+#
+
 $Module synth 3 Synth VMOD
+
+DESCRIPTION
+===========
+
+Simple VMOD useful to generate synthetic responses during the vcl_synth or
+vcl_backend_error phases.
+
 $Init init_function
 
 $Function VOID file(PRIV_CALL, STRING)
