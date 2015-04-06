@@ -181,6 +181,6 @@ Make targets:
 COPYRIGHT
 =========
 
-This document is licensed under the same license as the libvmod-synth project. See LICENSE for details.
+See LICENSE for details.
 
-* Copyright (c) 2014 Carlos Abalde <carlos.abalde@gmail.com>
+* Copyright (c) 2014-2015 Carlos Abalde <carlos.abalde@gmail.com>
