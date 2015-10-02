@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#include "vrt.h"
-#include "vqueue.h"
 #include "vcl.h"
+#include "vrt.h"
 #include "cache/cache.h"
+#include "vqueue.h"
 #include "vcc_if.h"
 
 static unsigned version = 0;
@@ -28,7 +28,7 @@ static VTAILQ_HEAD(, synth_file) files = VTAILQ_HEAD_INITIALIZER(files);
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void
-synth(const struct vrt_ctx *ctx, char *contents, unsigned long size);
+synth(VRT_CTX, char *contents, unsigned long size);
 
 static synth_file *
 get_synth_file(struct vmod_priv *call_priv, const char *path);
@@ -37,20 +37,28 @@ static char *
 render(char *contents, unsigned long size, const char *placeholders, const char *delimiter);
 
 int
-init_function(struct vmod_priv *vcl_priv, const struct VCL_conf *conf)
+init_function(VRT_CTX, struct vmod_priv *vcl_priv, enum vcl_event_e e)
 {
-    // Initialize the local VCL data structure.
-    if (vcl_priv->priv == NULL) {
-        // Every time the VMOD is loaded increase the global version. This
-        // will be used to refresh cached files when the VCL is reloaded.
-        AZ(pthread_mutex_lock(&mutex));
-        version++;
-        AZ(pthread_mutex_unlock(&mutex));
+    // Check event.
+    switch (e) {
+        case VCL_EVENT_LOAD:
+            // Set some VCL dummy state.
+            vcl_priv->priv = strdup("synth");
+            AN(vcl_priv->priv);
+            vcl_priv->free = free;
+            break;
 
-        // Set some VCL dummy state.
-        vcl_priv->priv = strdup("synth");
-        AN(vcl_priv->priv);
-        vcl_priv->free = free;
+        case VCL_EVENT_USE:
+            // Every time the VMOD is used by some VCL increase the global
+            // version. This will be used to refresh cached files when the
+            // VCL is reloaded.
+            AZ(pthread_mutex_lock(&mutex));
+            version++;
+            AZ(pthread_mutex_unlock(&mutex));
+            break;
+
+        default:
+            break;
     }
 
     // Done!
@@ -59,7 +67,7 @@ init_function(struct vmod_priv *vcl_priv, const struct VCL_conf *conf)
 
 void
 vmod_file(
-    const struct vrt_ctx *ctx, struct vmod_priv *call_priv,
+    VRT_CTX, struct vmod_priv *call_priv,
     VCL_STRING path)
 {
     if (path != NULL) {
@@ -72,7 +80,7 @@ vmod_file(
 
 void
 vmod_template(
-    const struct vrt_ctx *ctx, struct vmod_priv *call_priv,
+    VRT_CTX, struct vmod_priv *call_priv,
     VCL_STRING path, VCL_STRING placeholders, VCL_STRING delimiter)
 {
     if ((path != NULL) &&
@@ -88,7 +96,7 @@ vmod_template(
 }
 
 void
-vmod_pixel(const struct vrt_ctx *ctx)
+vmod_pixel(VRT_CTX)
 {
     synth(
         ctx,
@@ -97,7 +105,7 @@ vmod_pixel(const struct vrt_ctx *ctx)
 }
 
 void
-vmod_string(const struct vrt_ctx *ctx, VCL_STRING value)
+vmod_string(VRT_CTX, VCL_STRING value)
 {
     if (value != NULL) {
         synth(ctx, (char *)value, strlen(value));
@@ -109,22 +117,12 @@ vmod_string(const struct vrt_ctx *ctx, VCL_STRING value)
  *****************************************************************************/
 
 static void
-synth(const struct vrt_ctx *ctx, char *contents, unsigned long size)
+synth(VRT_CTX, char *contents, unsigned long size)
 {
     if ((ctx->method == VCL_MET_SYNTH) ||
         (ctx->method == VCL_MET_BACKEND_ERROR)) {
-        CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-
         struct vsb *vsb;
-        if (ctx->method == VCL_MET_BACKEND_ERROR) {
-            CHECK_OBJ_NOTNULL(ctx->bo, BUSYOBJ_MAGIC);
-            vsb = ctx->bo->synth_body;
-        } else {
-            CHECK_OBJ_NOTNULL(ctx->req, REQ_MAGIC);
-            vsb = ctx->req->synth_body;
-        }
-        AN(vsb);
-
+        CAST_OBJ_NOTNULL(vsb, ctx->specific, VSB_MAGIC);
         VSB_bcat(vsb, contents, size);
     }
 }

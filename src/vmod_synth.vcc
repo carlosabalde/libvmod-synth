@@ -13,7 +13,7 @@ DESCRIPTION
 Simple VMOD useful to generate synthetic responses during the vcl_synth or
 vcl_backend_error phases.
 
-$Init init_function
+$Event init_function
 
 $Function VOID file(PRIV_CALL, STRING)
 $Function VOID template(PRIV_CALL, STRING, STRING, STRING)
