@@ -18,8 +18,6 @@ $Function VOID file(PRIV_CALL, STRING)
 
 Arguments
     path: location of a file readable by Varnish Cache.
-Return value
-    VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a
     file. Must be used during the ``vcl_synth`` or ``vcl_backend_error`` phases.
@@ -48,8 +46,6 @@ Arguments
     placeholders: delimited list of placeholders names and values.
 
     delimiter: character delimiting names and values in the list of placeholders.
-Return value
-    VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a
     template file. Must be used during the ``vcl_synth`` or ``vcl_backend_error``
@@ -73,8 +69,6 @@ Example
 
 $Function VOID pixel()
 
-Return value
-    VOID
 Description
     Does the same as the ``synthetic()`` primitive, but uses the contents of a
     transparent 1px GIF image. Must be used during the ``vcl_synth`` or
@@ -104,8 +98,6 @@ $Function VOID string(STRING)
 
 Arguments
     value: any string value.
-Return value
-    VOID
 Description
     Does the same as the ``synthetic()`` primitive. Must be used during the
     ``vcl_synth`` or ``vcl_backend_error`` phases.
