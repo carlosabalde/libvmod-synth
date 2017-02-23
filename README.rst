@@ -1,5 +1,5 @@
 
-.. image:: https://travis-ci.org/carlosabalde/libvmod-synth.svg?branch=4.1
+.. image:: https://travis-ci.org/carlosabalde/libvmod-synth.svg?branch=5.x
    :alt: Travis CI badge
    :target: https://travis-ci.org/carlosabalde/libvmod-synth/
 
