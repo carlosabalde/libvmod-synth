@@ -48,7 +48,8 @@ init_function(VRT_CTX, struct vmod_priv *vcl_priv, enum vcl_event_e e)
             vcl_priv->free = free;
             break;
 
-        case VCL_EVENT_USE:
+        case VCL_EVENT_WARM:
+        case VCL_EVENT_COLD:
             // Every time the VMOD is used by some VCL increase the global
             // version. This will be used to refresh cached files when the
             // VCL is reloaded.

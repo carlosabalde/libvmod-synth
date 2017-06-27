@@ -6,7 +6,11 @@ server s1 {
 } -start
 
 shell {
-    echo -n "Hello world!" > ${tmpdir}/test.txt
+    if [ -f ${tmpdir}/test.txt ]
+    then
+      rm  ${tmpdir}/test.txt
+    fi
+    echo  "Hello world!" > ${tmpdir}/test.txt
 }
 
 varnish v1 -vcl+backend {
@@ -28,7 +32,7 @@ varnish v1 -vcl+backend {
 client c1 {
     txreq -url "/"
     rxresp
-    expect resp.body == "Hello world!"
+    expect resp.body == "Hello world!\n"
 } -run
 
 varnish v1 -expect client_req == 1
